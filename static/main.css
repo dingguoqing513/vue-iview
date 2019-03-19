@@ -13,9 +13,6 @@ body,button,input,select,textarea{
   font-size:16px;
   font-family:arial,'Hiragino Sans GB','Microsoft Yahei','微软雅黑','宋体',\5b8b\4f53,Tahoma,Arial,Helvetica,STHeiti;
 }
-h1,h2,h3,h4,h5,h6{
-  font-size:100%;
-}
 em{
   font-style:normal;
 }

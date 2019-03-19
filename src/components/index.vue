@@ -3,21 +3,22 @@
     <Layout style="height: inherit;">
       <Sider ref="side1" hide-trigger collapsible :collapsed-width="78" v-model="isCollapsed">
         <section class="compInfo">
-          <img src="@/assets/cow.png" alt="logo" class="companyLogo">
+          <img :src="logoImg" alt="logo" class="companyLogo">
         </section>
-        <Menu active-name="1-1" theme="dark" width="auto" :class="menuitemClasses" @on-select="selectMenu">
-          <MenuItem name="opt.name" v-for="(opt, index) in menuConfig" :key="index" :name="opt.label">
-            <Icon :type="opt.icon" size="20"></Icon>
-            <span>{{ opt.label }}</span>
-          </MenuItem>
-        </Menu>
+        <menu-nav></menu-nav>
       </Sider>
       <Layout>
         <Header :style="{padding: 0, textAlign: 'left'}" class="layout-header-bar">
-          <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '0 20px'}" type="md-menu" size="24"></Icon>
+          <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '0 20px',}" type="md-menu" size="24"></Icon>
+          <div class="userInfo">
+            <img :src="userImg" alt="header" class="userHeader">
+            <span :style="{color: 'skyBlue', cursor: 'pointer'}">{{ userName }}</span>
+          </div>
         </Header>
-        <Content :style="{background: '#fff', minHeight: '260px'}">
-          Content
+        <Content :style="{background: '#fff', minHeight: '260px', textAlign: 'left', padding: '20px'}">
+          <keep-alive>
+             <router-view></router-view>
+          </keep-alive>
         </Content>
       </Layout>
     </Layout>
@@ -25,32 +26,15 @@
 </template>
 
 <script>
+import menuNav from '@/components/Public/menuNav'
 export default {
   name: 'BaseEnter',
   data () {
     return {
       isCollapsed: false,
-      menuConfig: [{
-        name: '1-1',
-        label: '首页',
-        icon: 'md-boat'
-      }, {
-        name: '1-2',
-        label: '员工管理',
-        icon: 'md-people'
-      }, {
-        name: '1-3',
-        label: '出勤统计',
-        icon: 'ios-stats'
-      }, {
-        name: '1-3',
-        label: '工资报表',
-        icon: 'md-list-box'
-      }, {
-        name: '1-3',
-        label: '系统设置',
-        icon: 'ios-settings'
-      }]
+      logoImg: require('@/assets/cow.png'),
+      userImg: require('@/assets/user.png'),
+      userName: '管理员'
     }
   },
   computed: {
@@ -58,22 +42,16 @@ export default {
       return [
         'menu-icon',
         this.isCollapsed ? 'rotate-icon' : ''
-      ];
-    },
-    menuitemClasses () {
-      return [
-        'menu-item',
-        this.isCollapsed ? 'collapsed-menu' : ''
       ]
     }
   },
   methods: {
     collapsedSider () {
       this.$refs.side1.toggleCollapse();
-    },
-    selectMenu (label) {
-      console.log(label)
     }
+  },
+  components: {
+    menuNav
   }
 }
 </script>
@@ -114,6 +92,18 @@ export default {
 
   .menu-icon {
     transition: all .3s;
+  }
+
+  .userHeader {
+    width: 50px;
+    height: 50px;
+    vertical-align: middle;
+  }
+
+  .userInfo {
+    position: absolute;
+    right: 30px;
+    top: 0;
   }
 
   .rotate-icon{
