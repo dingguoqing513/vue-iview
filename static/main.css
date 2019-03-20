@@ -1,4 +1,4 @@
-body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,legend,button,input,textarea,th,td{
+body,h1,h2,h3,h4,h5,h6,hr,p,b,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,legend,button,input,textarea,th,td{
   margin:0;
   padding:0;
 }
@@ -11,7 +11,7 @@ html, body{
 }
 body,button,input,select,textarea{
   font-size:16px;
-  font-family:arial,'Hiragino Sans GB','Microsoft Yahei','微软雅黑','宋体',\5b8b\4f53,Tahoma,Arial,Helvetica,STHeiti;
+  font-family:"Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
 }
 em{
   font-style:normal;
@@ -27,9 +27,6 @@ a{
 }
 a:hover{
   text-decoration:none;
-}
-legend{
-  color:#000;
 }
 fieldset,img{
   border:0;
@@ -108,4 +105,12 @@ td{
 }
 img{
   border:0;
+}
+
+.color_0 {
+  color:#000;
+}
+
+.color_3 {
+  color: #333;
 }
