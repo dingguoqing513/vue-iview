@@ -5,7 +5,7 @@ import 'iview/dist/styles/iview.css' // 引入iView css
 import router from './router'
 import '../static/main.css' // 引入公共样式
 import ECharts from 'vue-echarts/components/ECharts' // 引入vue-echarts
-import 'echarts/lib/chart/line' // 按需引入-【echarts line】
+import 'echarts/lib/chart/line' // 【echarts line】
 
 Vue.config.productionTip = false
 Vue.component('chart', ECharts)

@@ -1,6 +1,7 @@
 <template>
   <div>
-    <h1 class="homeTitle">考勤数据统计</h1>
+    <headers title="考勤数据统计"></headers>
+    <span>坎坎坷坷</span>
     <p class="lastMonth"><b>上月考勤情况</b></p>
     <section class="cardContainer">
       <Card class="cardBox"
@@ -21,7 +22,7 @@
                 <ul>
                   <li v-for="(item, key) in opt.detailList" :key="key" class="detailList">
                     <div>
-                      <img class="detailImg" :src="item.sex === 0 ? 'manImg' : 'womanImg'">
+                      <img class="detailImg" :src="item.sex === 0 ? manImg : womanImg">
                       <span>{{ item.name }}</span>
                       <span class="detailNum">{{ item.num }}</span>次
                     </div>
@@ -35,12 +36,14 @@
     </section>
 
     <section>
-      <chart ref="chart1" :options="orgOptions" :auto-resize="true"></chart>
+      <chart ref="chart1" :options="orgOptions" :auto-resize="true" style="width: 100%;" class="chartBox"></chart>
     </section>
   </div>
 </template>
 
 <script>
+import headers from '@/components/Public/headers.vue'
+import { debounce } from '@/utils/utils'
 export default {
   data () {
     return {
@@ -226,33 +229,139 @@ export default {
     }
   },
   mounted() {
-    this.orgOptions = {
-      xAxis: {
-        type: 'category',
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [{
-        data: [820, 932, 901, 934, 1290, 1330, 1320],
-        type: 'line',
-        smooth: true
-      }]
-    }
+    this.initChart()
+
+
+    //   xAxis: {
+    //     type: 'category',
+    //     data: ['01.23', '01.24', '01.25', '01.26', '01.27', '01.28', '01.29'],
+    //     boundaryGap: ['10%', '10%',],//坐标轴两边留白
+    //     axisLine: {//坐标轴
+    //         lineStyle:{
+    //             opacity: 0.01,//设置透明度就可以控制显示不显示
+    //         },
+    //     },
+    //     splitLine: {//网格线
+    //         show: false,//网格线
+    //         lineStyle:{
+    //             color: '#eee',
+    //         },
+    //     },
+    //     axisTick: {//刻度线
+    //         show: false,//去掉刻度线
+    //     }
+    // },
+    // yAxis: {
+    //     min:0,//最小刻度
+    //     max:25,//最大刻度
+    //     type: 'value',
+    //     name:'℃         ',//是基于Y轴线对齐，用空格站位让坐标轴名称与刻度名称对齐
+    //     nameTextStyle: {
+    //         color:'#444e65',
+    //         align:'left',//文字水平对齐方式
+    //         verticalAlign:'middle' //文字垂直对齐方式
+    //     },
+    //     axisTick: { //刻度线
+    //         show: false //去掉刻度线
+    //     },
+    //     axisLine: { //坐标轴线
+    //         lineStyle:{
+    //             opacity: 0 //透明度为0 
+    //         }
+    //     },
+    //     splitLine: {//网格线
+    //         // show: false,//网格线
+    //         lineStyle:{
+    //             color: '#eeeeee'
+    //         }
+    //     }
+    // },
+    // series: [{
+    //       data: [15, 14, 10, 11, 14.58, 10, 11.5,],//数据
+    //       type: 'line',//图表类型，折线图还是柱状图还是饼图
+    //       label: {//图形上的文本标签
+    //           normal:{
+    //               formatter: '{@data}℃',
+    //               show: true,//显示数据
+    //               color: '#00af58',
+    //               position: 'top',
+    //               fontSize:'14',
+    //           },
+    //       },
+    //       itemStyle: {//折线拐点标志的样式。
+    //           normal: {
+    //               color: '#00af58',
+    //           },
+    //       },
+    //       areaStyle: {//区域填充样式
+    //           normal:{
+    //               color: {
+    //                   type:'linear',
+    //                   x: 0,
+    //                   y: 0,
+    //                   x2: 0,
+    //                   y2: 1,
+    //                   colorStops: [
+    //                       {
+    //                           offset: 0,
+    //                           color: 'rgba(0, 175, 88, 0.4)',
+    //                       },
+    //                       {
+    //                           offset: 1,
+    //                           color: 'rgba(0, 175, 88, 0.01)',
+    //                       },
+    //                   ],
+    //                   globaCoord: false,
+    //               }
+    //           }
+    //       }
+    //   }]
+    // }
   },
   methods: {
+    initChart() {
+      this.orgOptions = {
+        grid: {
+          left: 40,
+          right: 0
+        },
+        xAxis: {
+          type: 'category',
+          data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+        },
+        yAxis: {
+          name: '(单位：次)',
+          nameTextStyle: {
+            fontWeight: 'bold'
+          },
+          type: 'value'
+        },
+        series: [{
+          data: ['29', '23', '26', '21', '14', '12', '31', '23', '7', '27', '15', '18'],
+          type: 'line',
+          itemStyle: {
+            normal: {
+              label: {
+                show: true,
+                // formatter: "{c}次",
+                textStyle: {
+                  color: 'darkBlue' // 数值点颜色
+                }
+              }
+            }
+          },
+          smooth: false // 曲线是否平滑显示
+        }]
+      }
+    }
+  },
+  components: {
+    headers
   }
 }
 </script>
 
 <style>
-  .homeTitle {
-    font-weight: 300;
-    font-size: 24px;
-    padding: 20px 0;
-  }
-
   .lastMonth {
     padding-bottom: 15px;
   }
@@ -292,6 +401,8 @@ export default {
 
   .detailImg {
     padding-right: 10px;
+    width: 35px;
+    vertical-align: middle;
   }
 
   .detailList {
@@ -304,6 +415,10 @@ export default {
     color: #2561EF;
     font-size: 18px;
     padding-left: 20px;
+  }
+
+  .chartBox > div, .chartBox canvas {
+    width: 100% !important;
   }
 </style>
 
