@@ -9,6 +9,11 @@
 3. npm install
 4. npm run dev
 
+#### 项目截图
+
+![首页](https://github.com/dingguoqing513/vue-iview/blob/master/screen/screen01.png)
+
+![菜单折叠后](https://github.com/dingguoqing513/vue-iview/blob/master/screen/screen02.png)
 
 #### 参与贡献
 
