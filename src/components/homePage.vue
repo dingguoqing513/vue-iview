@@ -1,7 +1,6 @@
 <template>
   <div>
     <headers title="考勤数据统计"></headers>
-    <span>坎坎坷坷</span>
     <p class="lastMonth"><b>上月考勤情况</b></p>
     <section class="cardContainer">
       <Card class="cardBox"

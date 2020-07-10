@@ -37,6 +37,11 @@ export default new Router({
           component: () => import('@/components/SettingComponent/setting.vue')
         }
       ]
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/components/login.vue')
     }
   ]
 })

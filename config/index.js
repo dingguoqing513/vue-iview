@@ -7,6 +7,17 @@ const path = require('path')
 module.exports = {
   dev: {
 
+    proxyTable: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false, // https 需要配置此参数
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    },
+
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',

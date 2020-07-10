@@ -11,8 +11,13 @@
         <Header :style="{padding: 0, textAlign: 'left'}" class="layout-header-bar">
           <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '0 20px',}" type="md-menu" size="24"></Icon>
           <div class="userInfo">
-            <img :src="userImg" alt="header" class="userHeader">
-            <span :style="{color: 'skyBlue', cursor: 'pointer'}">{{ userName }}</span>
+            <Dropdown trigger="click" @on-click="opMenu">
+              <img :src="userImg" alt="header" class="userHeader">
+              <span :style="{color: 'skyBlue'}">{{ userName }}</span>
+              <DropdownMenu slot="list">
+                <DropdownItem name="logout">退出登录</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </div>
         </Header>
         <Content :style="{background: '#fff', minHeight: '260px', textAlign: 'left', padding: '20px'}">
@@ -34,7 +39,7 @@ export default {
       isCollapsed: false,
       logoImg: require('@/assets/cow.png'),
       userImg: require('@/assets/user.png'),
-      userName: '管理员'
+      userName: '----'
     }
   },
   computed: {
@@ -45,9 +50,28 @@ export default {
       ]
     }
   },
+  mounted () {
+    this.$axios.get('http://localhost:3000/userInfo', {
+      params: {
+        account: localStorage.getItem('username')
+      }
+    }).then((res) => {
+      console.log(res)
+      this.userName = res.data.data.account
+    })
+  },
   methods: {
     collapsedSider () {
       this.$refs.side1.toggleCollapse();
+    },
+    opMenu (name) {
+      switch (name) {
+        case 'logout':
+          this.$router.push('/login')
+          this.$Message.success('欢迎下次登录')
+          break
+      }
+      
     }
   },
   components: {
@@ -104,6 +128,7 @@ export default {
     position: absolute;
     right: 30px;
     top: 0;
+    cursor: pointer;
   }
 
   .rotate-icon{
