@@ -19,6 +19,7 @@ Vue.component('chart', ECharts)
 Object.keys(filters).forEach(opt => Vue.filter(opt, filters[opt]))
 Vue.use(iView)
 Vue.use(axios)
+axios.defaults.withCredentials = false
 Vue.prototype.$axios = axios
 new Vue({
   el: '#app',

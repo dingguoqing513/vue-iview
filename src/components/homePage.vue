@@ -16,7 +16,7 @@
           <div class="infoBot">
             <div class="infoBotL">{{ opt.count }}次</div>
             <Poptip placement="right" width="230" class="poptipContainer">
-              <div class="infoBotR" >查看{{ opt.title }}的小伙伴</div>
+              <div class="infoBotR" >{{ opt.title }}的小伙伴</div>
               <div slot="content" class="color_3 slotContent">
                 <ul>
                   <li v-for="(item, key) in opt.detailList" :key="key" class="detailList">

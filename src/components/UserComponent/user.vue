@@ -2,7 +2,7 @@
   <div>
     <headers title="员工管理" inline></headers>
     <div class="btnBox">
-      <Button type="primary" shape="circle" icon="md-add">新增</Button>
+      <Button type="primary" shape="circle" icon="md-add" @click="addUser">新增</Button>
       <Button type="primary" shape="circle" icon="md-trash">批量删除</Button>
       <Button type="primary" shape="circle" icon="md-arrow-round-down" @click="exportExcel">导出</Button>
     </div>
@@ -13,6 +13,37 @@
            :data="userList"
            @on-selection-change="onSelect">
     </Table>
+    <Modal class="modalAddUser"
+           v-model="addUserModal"
+           draggable
+           scrollable
+           title="新增用户"
+           @on-visible-change="addUserModalChange('addUserForm')">
+          <Form ref="addUserForm" :model="addUserForm" :rules="addUserRef" :label-width="120">
+            <FormItem label="用户名：" prop="name">
+              <Input v-model="addUserForm.name" placeholder="用户名" clearable style="width: 300px" />
+            </FormItem>
+            <FormItem label="工 号：" prop="id">
+              <Input v-model="addUserForm.id" placeholder="工号" clearable style="width: 300px" />
+            </FormItem>
+            <FormItem label="部 门：" prop="department">
+              <Input v-model="addUserForm.department" placeholder="部门" clearable style="width: 300px" />
+            </FormItem>
+            <FormItem label="手 机：" prop="phone">
+              <Input v-model="addUserForm.phone" placeholder="手机" clearable style="width: 300px" />
+            </FormItem>
+            <FormItem label="邮 箱：" prop="email">
+              <Input v-model="addUserForm.email" placeholder="邮箱" clearable style="width: 300px" />
+            </FormItem>
+            <FormItem label="学 历：" prop="education">
+              <Input v-model="addUserForm.education" placeholder="学历" clearable style="width: 300px" />
+            </FormItem>
+          </Form>
+          <div slot="footer">
+            <Button size="large" @click="cancelAddUser('addUserForm')">取消</Button>
+            <Button type="success" size="large" :loading="modal_loading" @click="submitAddUser('addUserForm')">新增</Button>
+        </div>
+    </Modal>
   </div>
 </template>
 
@@ -24,6 +55,37 @@ export default {
   data() {
     return {
       tableLoading: true,
+      addUserForm: {
+        name: '',
+        id: '',
+        department: '',
+        phone: '',
+        email: '',
+        education: ''
+      },
+      modal_loading: false,
+      addUserRef: {
+        name: [
+          { required: true, message: '用户名不可以为空', trigger: 'blur' }
+        ],
+        id: [
+          { required: true, message: '工号不可以为空', trigger: 'blur' }
+        ],
+        department: [
+          { required: true, message: '部门不可以为空', trigger: 'blur' }
+        ],
+        phone: [
+          { required: true, message: '手机号不可以为空', trigger: 'change' },
+          { pattern: /^1[3456789]\d{9}$/, message: "手机号码格式不正确", trigger: "blur" }
+        ],
+        email: [
+          { required: true, message: '部门不可以为空', trigger: 'blur' },
+          { type: 'email', message: '邮箱格式填写有误', trigger: 'blur' }
+        ],
+        education: [
+          { required: true, message: '学历不可以为空', trigger: 'blur' }
+        ]
+      },
       columns: [{
         type: 'selection',
         width: 60,
@@ -93,77 +155,59 @@ export default {
         phone: '16655667788',
         email: '747896298@qq.com',
         qualification: '本科'
-      }, {
-        name: '胡歌',
-        id: 201903220001,
-        department: '技术部',
-        phone: '16655667788',
-        email: '747896298@qq.com',
-        qualification: '本科'
-      }, {
-        name: '胡歌',
-        id: 201903220001,
-        department: '技术部',
-        phone: '16655667788',
-        email: '747896298@qq.com',
-        qualification: '本科'
-      }, {
-        name: '胡歌',
-        id: 201903220001,
-        department: '技术部',
-        phone: '16655667788',
-        email: '747896298@qq.com',
-        qualification: '本科'
-      }, {
-        name: '胡歌',
-        id: 201903220001,
-        department: '技术部',
-        phone: '16655667788',
-        email: '747896298@qq.com',
-        qualification: '本科'
-      }, {
-        name: '胡歌',
-        id: 201903220001,
-        department: '技术部',
-        phone: '16655667788',
-        email: '747896298@qq.com',
-        qualification: '本科'
-      }, {
-        name: '胡歌',
-        id: 201903220001,
-        department: '技术部',
-        phone: '16655667788',
-        email: '747896298@qq.com',
-        qualification: '本科'
-      }, {
-        name: '胡歌',
-        id: 201903220001,
-        department: '技术部',
-        phone: '16655667788',
-        email: '747896298@qq.com',
-        qualification: '本科'
-      }, {
-        name: '胡歌',
-        id: 201903220001,
-        department: '技术部',
-        phone: '16655667788',
-        email: '747896298@qq.com',
-        qualification: '本科'
-      }, {
-        name: '胡歌',
-        id: 201903220001,
-        department: '技术部',
-        phone: '16655667788',
-        email: '747896298@qq.com',
-        qualification: '本科'
       }],
-      selection: []
+      selection: [],
+      addUserModal: false
     }
   },
-  mounted() {
+  mounted () {
     this.tableLoading = false
+    this.getUserList()
   },
   methods: {
+    getUserList () {
+      this.$axios.get('/api/userList', {
+        params: {
+          page: 1,
+          page_size: 10
+        }
+      }).then((res) => {
+        console.log(res)
+        this.userList = res.data.list
+      })
+    },
+    addUser () {
+      this.addUserModal = true
+    },
+    submitAddUser (name) {
+      this.$refs[name].validate((valid) => {
+        if (valid) {
+          let params = { ...this.addUserForm, phone: this.addUserForm.phone }
+          this.requestAddUser(params)
+        } else {
+          this.$Message.error('Fail!');
+        }
+      })
+    },
+    addUserModalChange (name) {
+      this.$refs[name].resetFields();
+    },
+    cancelAddUser (name) {
+      this.addUserModal = false
+    },
+    requestAddUser (data) {
+      console.log(data)
+      this.$axios.post('/api/addUser', data).then((res) => {
+        console.log(res)
+        if (res.data.code === 200) {
+          this.$Message.success('新增成功!')
+          this.getUserList()
+          this.addUserModal = false
+        } else {
+          this.$Message.error(res.data.msg)
+        }
+      })
+    },
     editTable (data) {
       console.log(data)
     },
@@ -211,6 +255,13 @@ export default {
 
   .btnBox button {
     margin: 0 5px;
+  }
+  .modalAddUser .ivu-modal-header {
+    text-align: center;
+  }
+
+  .modalAddUser .ivu-form-item {
+    margin-bottom: 25px;
   }
 </style>
 

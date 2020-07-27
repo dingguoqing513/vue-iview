@@ -51,7 +51,7 @@ export default {
     }
   },
   mounted () {
-    this.$axios.get('http://localhost:3000/userInfo', {
+    this.$axios.get('/api/userInfo', {
       params: {
         account: localStorage.getItem('username')
       }

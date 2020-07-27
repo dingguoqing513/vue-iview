@@ -92,9 +92,6 @@ label,button{
 pre.wordwrap{
   white-space:pre-wrap;
 }
-body{
-  text-align:center;
-}
 body,form{
   position:relative;
 }
