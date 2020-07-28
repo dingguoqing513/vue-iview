@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="user-container">
     <headers title="员工管理" inline></headers>
     <div class="btnBox">
       <Button type="primary" shape="circle" icon="md-add" @click="addUser">新增</Button>
@@ -13,6 +13,7 @@
            :data="userList"
            @on-selection-change="onSelect">
     </Table>
+    <Page class="page-class" :total="100" :current="1" size="small" show-total show-elevator/>
     <Modal class="modalAddUser"
            v-model="addUserModal"
            draggable
@@ -41,7 +42,20 @@
           </Form>
           <div slot="footer">
             <Button size="large" @click="cancelAddUser('addUserForm')">取消</Button>
-            <Button type="success" size="large" :loading="modal_loading" @click="submitAddUser('addUserForm')">新增</Button>
+            <Button type="success" size="large" :loading="add_modal_loading" @click="submitAddUser('addUserForm')">新增</Button>
+        </div>
+    </Modal>
+
+    <Modal v-model="delModal" width="360">
+        <p slot="header" style="color:#f60;text-align:center">
+            <Icon type="ios-information-circle"></Icon>
+            <span>确定删除？</span>
+        </p>
+        <div style="text-align:center">
+            <h3 style='color:#f60;font-weight:normal;margin: 20px 0;'>删除后将不可恢复，是否继续？</h3>
+        </div>
+        <div slot="footer">
+            <Button type="error" size="large" long :loading="del_modal_loading" @click="delListItem">删除</Button>
         </div>
     </Modal>
   </div>
@@ -63,7 +77,10 @@ export default {
         email: '',
         education: ''
       },
-      modal_loading: false,
+      delModal: false,
+      add_modal_loading: false,
+      del_modal_loading: false,
+      delItem: {},
       addUserRef: {
         name: [
           { required: true, message: '用户名不可以为空', trigger: 'blur' }
@@ -143,6 +160,12 @@ export default {
               style: {
                 marginLeft: '5px',
                 opacity: '0.7'
+              },
+              on: {
+                click: () => {
+                  this.delModal = true
+                  this.delItem = params.row
+                }
               }
             }, '删除')
           ])
@@ -208,6 +231,24 @@ export default {
         }
       })
     },
+    requestDelUser () {
+      console.log(this.delItem)
+      this.$axios.delete('/api/delList', {
+        data: {
+          id: this.delItem.id
+        }
+      }).then((res) => {
+        console.log(res)
+        this.delModal = false;
+        this.del_modal_loading = false;
+        this.$Message.success(res.data.msg);
+        this.getUserList()
+      })
+    },
+    delListItem () {
+      this.del_modal_loading = true;
+      this.requestDelUser()
+    },
     editTable (data) {
       console.log(data)
     },
@@ -251,6 +292,10 @@ export default {
     margin-left: 20px;
     position: relative;
     top: -3px;
+  }
+  .page-class {
+    margin: 20px auto 60px;
+    text-align: center;
   }
 
   .btnBox button {

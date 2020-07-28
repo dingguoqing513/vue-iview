@@ -21,9 +21,7 @@
           </div>
         </Header>
         <Content :style="{background: '#fff', minHeight: '260px', textAlign: 'left', padding: '20px'}">
-          <keep-alive>
-             <router-view></router-view>
-          </keep-alive>
+          <router-view></router-view>
         </Content>
       </Layout>
     </Layout>
@@ -50,6 +48,11 @@ export default {
       ]
     }
   },
+  created () {
+    if (sessionStorage.getItem('isCollapsed')) {
+      this.isCollapsed = sessionStorage.getItem('isCollapsed') === 'false' ? false : true
+    }
+  },
   mounted () {
     this.$axios.get('/api/userInfo', {
       params: {
@@ -63,6 +66,7 @@ export default {
   methods: {
     collapsedSider () {
       this.$refs.side1.toggleCollapse();
+      sessionStorage.setItem('isCollapsed', this.isCollapsed)
     },
     opMenu (name) {
       switch (name) {
@@ -71,7 +75,6 @@ export default {
           this.$Message.success('欢迎下次登录')
           break
       }
-      
     }
   },
   components: {
@@ -81,12 +84,15 @@ export default {
 </script>
 
 <style scoped>
+  .ivu-layout {
+    background: #fff;
+  }
   .T-container {
     position: relative;
     overflow: hidden;
     border-radius: 4px;
     height: 100%;
-    background: #f5f7f9;
+    background: #fff;
   }
 
   .companyLogo {
