@@ -202,6 +202,42 @@ export default {
       id: 'rs2018100045',
       sex: 1,
       num: 1
-      }]
     }]
-  }
+  }],
+  educations: [{
+    label: '博士',
+    value: 'doctor'
+  }, {
+    label: '硕士',
+    value: 'masterDegree'
+  }, {
+    label: '本科',
+    value: 'undergraduate'
+  }, {
+    label: '大专',
+    value: 'junior'
+  }, {
+    label: '中专',
+    value: 'secondary'
+  }, {
+    label: '高中',
+    value: 'highSchool'
+  }, {
+    label: '初中',
+    value: 'juniorSchool'
+  }, {
+    label: '小学',
+    value: 'primarySchool'
+  }, {
+    label: '文盲',
+    value: 'illiteracy'
+  }],
+  testUserList: [{
+    name: '测试姓名',
+    id: 201903220001,
+    department: '测试部',
+    phone: 18888888888,
+    email: 'test@test.com',
+    education: '本科'
+  }]
+}

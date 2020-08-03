@@ -2,30 +2,46 @@
   <div class="user-container">
     <headers title="员工管理" inline></headers>
     <div class="btnBox">
-      <Button type="primary" shape="circle" icon="md-add" @click="addUser">新增</Button>
-      <Button type="primary" shape="circle" icon="md-trash">批量删除</Button>
-      <Button type="primary" shape="circle" icon="md-arrow-round-down" @click="exportExcel">导出</Button>
+      <div class="btnBox-item">
+        <Button type="primary" shape="circle" icon="md-add" @click="addUser">新增</Button>
+        <Button type="success" shape="circle" icon="md-arrow-round-down" @click="exportExcel">导出</Button>
+      </div>
+      <div class="btnBox-item btnBox-right">
+        <Input placeholder="搜索用户"
+               class="searchUser"
+               v-model.trim="searchValue"
+               @on-click="searchUser"
+               @on-enter="searchUser"
+               @on-search="searchUser">
+            <Icon type="ios-search" slot="suffix" />
+        </Input>
+      </div>
     </div>
-
     <Table :loading="tableLoading"
            ref="userSelection"
            :columns="columns"
            :data="userList"
            @on-selection-change="onSelect">
     </Table>
-    <Page class="page-class" :total="100" :current="1" size="small" show-total show-elevator/>
+    <Page class="page-class"
+          :total="total"
+          :current="current"
+          size="small"
+          show-total
+          show-elevator
+          @on-change='onCurrentChange'/>
     <Modal class="modalAddUser"
            v-model="addUserModal"
            draggable
            scrollable
-           title="新增用户"
+           :title="modalTitle"
            @on-visible-change="addUserModalChange('addUserForm')">
           <Form ref="addUserForm" :model="addUserForm" :rules="addUserRef" :label-width="120">
             <FormItem label="用户名：" prop="name">
               <Input v-model="addUserForm.name" placeholder="用户名" clearable style="width: 300px" />
             </FormItem>
             <FormItem label="工 号：" prop="id">
-              <Input v-model="addUserForm.id" placeholder="工号" clearable style="width: 300px" />
+              <Input v-model="addUserForm.id" :disabled="showModal === 'edit'" placeholder="工号" clearable style="width: 300px" />
             </FormItem>
             <FormItem label="部 门：" prop="department">
               <Input v-model="addUserForm.department" placeholder="部门" clearable style="width: 300px" />
@@ -36,13 +52,17 @@
             <FormItem label="邮 箱：" prop="email">
               <Input v-model="addUserForm.email" placeholder="邮箱" clearable style="width: 300px" />
             </FormItem>
-            <FormItem label="学 历：" prop="education">
-              <Input v-model="addUserForm.education" placeholder="学历" clearable style="width: 300px" />
+            <FormItem label="学 历：" prop="education" style="width: 420px">
+              <!-- <Input v-model="addUserForm.education" placeholder="学历" clearable style="width: 300px" /> -->
+              <Select v-model="addUserForm.education">
+                <Option v-for="item in educations" :value="item.label" :key="item.lable">{{ item.label }}</Option>
+              </Select>
             </FormItem>
           </Form>
           <div slot="footer">
             <Button size="large" @click="cancelAddUser('addUserForm')">取消</Button>
-            <Button type="success" size="large" :loading="add_modal_loading" @click="submitAddUser('addUserForm')">新增</Button>
+            <Button type="success" size="large" v-if="showModal === 'add'" :loading="add_modal_loading" @click="submitAddUser('addUserForm')">新增</Button>
+            <Button type="primary" size="large" v-if="showModal === 'edit'" :loading="add_modal_loading" @click="submitEditUser('addUserForm')">完成</Button>
         </div>
     </Modal>
 
@@ -63,10 +83,11 @@
 
 <script>
 import headers from '@/components/Public/headers.vue'
+import mock from '../../utils/data.js'
 import XLSX from 'xlsx'
 import FileSaver from 'file-saver'
 export default {
-  data() {
+  data () {
     return {
       tableLoading: true,
       addUserForm: {
@@ -81,12 +102,15 @@ export default {
       add_modal_loading: false,
       del_modal_loading: false,
       delItem: {},
+      modalTitle: '',
+      educations: mock.educations,
+      searchValue: '',
       addUserRef: {
         name: [
           { required: true, message: '用户名不可以为空', trigger: 'blur' }
         ],
         id: [
-          { required: true, message: '工号不可以为空', trigger: 'blur' }
+          { required: true, message: '工号不可以为空' }
         ],
         department: [
           { required: true, message: '部门不可以为空', trigger: 'blur' }
@@ -103,6 +127,9 @@ export default {
           { required: true, message: '学历不可以为空', trigger: 'blur' }
         ]
       },
+      total: 0,
+      current: 1,
+      showModal: '',
       columns: [{
         type: 'selection',
         width: 60,
@@ -129,7 +156,7 @@ export default {
         align: 'center'
       }, {
         title: '学历',
-        key: 'qualification',
+        key: 'education',
         align: 'center'
       }, {
         title: '操作',
@@ -148,6 +175,9 @@ export default {
               },
               on: {
                 click: () => {
+                  this.showModal = 'edit'
+                  this.modalTitle = '修改用户'
+                  this.addUserModal = true
                   this.editTable(params.row)
                 }
               }
@@ -171,35 +201,40 @@ export default {
           ])
         }
       }],
-      userList: [{
-        name: '胡歌',
-        id: 201903220001,
-        department: '技术部',
-        phone: '16655667788',
-        email: '747896298@qq.com',
-        qualification: '本科'
-      }],
+      userList: mock.testUserList,
       selection: [],
       addUserModal: false
     }
+  },
+  created () {
+    this.$axios.get('/api/userInfo', {
+      params: {
+        account: localStorage.getItem('username')
+      }
+    }).then((res) => {
+      console.log(res)
+    })
   },
   mounted () {
     this.tableLoading = false
     this.getUserList()
   },
   methods: {
-    getUserList () {
+    getUserList (params) {
       this.$axios.get('/api/userList', {
-        params: {
+        params: params ? params : {
           page: 1,
           page_size: 10
         }
       }).then((res) => {
         console.log(res)
         this.userList = res.data.list
+        this.total = res.data.total
       })
     },
     addUser () {
+      this.modalTitle = '新增用户'
+      this.showModal = 'add'
       this.addUserModal = true
     },
     submitAddUser (name) {
@@ -207,6 +242,17 @@ export default {
         if (valid) {
           let params = { ...this.addUserForm, phone: this.addUserForm.phone }
           this.requestAddUser(params)
+        } else {
+          this.$Message.error('Fail');
+        }
+      })
+    },
+    submitEditUser (name) {
+      console.log(this.addUserForm)
+      this.$refs[name].validate((valid) => {
+        if (valid) {
+          let params = { ...this.addUserForm, phone: this.addUserForm.phone }
+          this.requestEditUser(params)
         } else {
           this.$Message.error('Fail!');
         }
@@ -224,6 +270,18 @@ export default {
         console.log(res)
         if (res.data.code === 200) {
           this.$Message.success('新增成功!')
+          this.getUserList()
+          this.addUserModal = false
+        } else {
+          this.$Message.error(res.data.msg)
+        }
+      })
+    },
+    requestEditUser (data) {
+      this.$axios.patch('/api/updateList', data).then((res) => {
+        console.log(res)
+        if (res.data.code === 200) {
+          this.$Message.success('修改成功!')
           this.getUserList()
           this.addUserModal = false
         } else {
@@ -250,10 +308,23 @@ export default {
       this.requestDelUser()
     },
     editTable (data) {
-      console.log(data)
+      this.addUserForm = { ...data }
     },
     onSelect(selection, row) {
       this.selection = selection
+    },
+    onCurrentChange (page) {
+      this.getUserList({ page: page, page_size: 10 })
+    },
+    searchUser () {
+      console.log(this.searchValue)
+      this.$axios.post('/api/searchList', {
+        keyword: this.searchValue
+      }).then((res) => {
+        console.log(res)
+        this.userList = res.data.list
+        this.total = res.data.total
+      })
     },
     exportExcel() {
       if (this.selection == '') return this.$Message.warning('请先选择您要导出的项')
@@ -287,12 +358,42 @@ export default {
 </script>
 
 <style>
+  .user-container {
+    position: relative;
+  }
   .btnBox {
     display: inline-block;
+    align-items: center;
     margin-left: 20px;
     position: relative;
     top: -3px;
+    width: calc(100% - 121px);
   }
+
+  .btnBox-item {
+    display: inline-block;
+  }
+
+  .btnBox-right {
+    position: absolute;
+    right: 0;
+  }
+
+  .btnBox-right input {
+    border: none;
+    border-bottom: 1px solid #ccc;
+    border-radius: 15px;
+    padding-left: 15px;
+  }
+
+  .btnBox-right input:focus {
+    box-shadow: 0 3px 3px 0 rgba(45, 140, 240, .2);
+  }
+
+  .searchUser {
+    width: 300px;
+  }
+
   .page-class {
     margin: 20px auto 60px;
     text-align: center;
@@ -301,6 +402,7 @@ export default {
   .btnBox button {
     margin: 0 5px;
   }
+
   .modalAddUser .ivu-modal-header {
     text-align: center;
   }
