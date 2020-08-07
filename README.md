@@ -17,8 +17,6 @@
 
 ![用户管理页](https://github.com/dingguoqing513/vue-iview/blob/master/screen/screen03.png)
 
-![出勤统计页](https://github.com/dingguoqing513/vue-iview/blob/master/screen/screen04.png)
-
 #### 参与贡献
 
 1. Fork 本仓库
