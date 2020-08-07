@@ -239,5 +239,155 @@ export default {
     phone: 18888888888,
     email: 'test@test.com',
     education: '本科'
+  }],
+  bubbleSeries: [{
+      name: '客服部',
+      data: [{
+          name: '李刚',
+          value: 100
+      },
+      {
+          name: "刘美",
+          value: 50
+      },
+      {
+          name: "丽萨",
+          value: 76
+      },
+      {
+          name: "崔大",
+          value: 72
+      }]
+  }, {
+      name: '行政部',
+      data: [{
+          name: "小妹",
+          value: 82
+      },
+      {
+          name: "小美",
+          value: 93
+      },
+      {
+          name: "小可",
+          value: 392
+      }, {
+          name: "小笑",
+          value: 225
+      }, {
+          name: "小啦",
+          value: 141
+      }]
+  }, {
+      name: '后端部',
+      data: [{
+          name: "阿萨",
+          value: 409
+      },
+      {
+          name: "災哩",
+          value: 34
+      },
+      {
+          name: "噶皮",
+          value: 711
+      }, {
+          name: "周都",
+          value: 34
+      },
+      {
+          name: "丁帅",
+          value: 321
+      }, {
+          name: "王动",
+          value: 340
+      },
+      {
+          name: "赵优秀",
+          value: 171
+      }, {
+          name: "郑丹丹",
+          value: 234
+      },
+      {
+          name: "冯公",
+          value: 871
+      }]
+  }, {
+      name: '前端部',
+      data: [{
+          name: "周喏",
+          value: 76
+      },
+      {
+          name: "政国",
+          value: 5335
+      }, {
+          name: "凯豆",
+          value: 566
+      }, {
+          name: "马卡",
+          value: 456
+      }]
+  }, {
+      name: '销售部',
+      data: [{
+          name: "一多",
+          value: 720
+      },
+      {
+          name: "大力",
+          value: 81
+      },
+      {
+          name: "百特",
+          value: 178
+      },
+      {
+          name: "贝多芬",
+          value: 349
+      }, 
+      {
+          name: "艾瑞卡",
+          value: 1210
+      },
+      {
+          name: "薇薇",
+          value: 195
+      }]
+  }, {
+      name: '采购部',
+      data: [{
+          name: "欧迪",
+          value: 659
+      },
+      {
+          name: "之美",
+          value: 801
+      },
+      {
+          name: "德芙",
+          value: 1021
+      },
+      {
+          name: "魏五",
+          value: 790
+      },
+      {
+          name: "阿卡拉",
+          value: 1011
+      },
+      {
+          name: "瑞里",
+          value: 1766
+      },
+      {
+          name: "Kies",
+          value: 618
+      },
+      {
+          name: "Kore",
+          value: 610
+      }]
   }]
 }

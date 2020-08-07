@@ -6,16 +6,20 @@ import router from './router'
 import '../static/main.css' // 引入公共样式
 import filters from './utils/filter'
 import axios from 'axios'
+import Highcharts from 'highcharts/highstock'
+import HighchartsMore from 'highcharts/highcharts-more';
+import HighchartsDrilldown from 'highcharts/modules/drilldown';
+import Highcharts3D from 'highcharts/highcharts-3d';
+import Highmaps from 'highcharts/modules/map';
 
-import ECharts from 'vue-echarts/components/ECharts' // 引入vue-echarts
-import 'echarts/lib/chart/line' // 【echarts line】
-import 'echarts/lib/chart/pie' // 【echarts pie】
-import 'echarts/lib/chart/radar' // 【echarts radar】雷达图
-import 'echarts/lib/component/legend' // 【echarts legend】标记功能
-import 'echarts/lib/component/tooltip' // 【echarts tooltip】hover
+HighchartsMore(Highcharts)
+HighchartsDrilldown(Highcharts);
+Highcharts3D(Highcharts);
+Highmaps(Highcharts);
+
 
 Vue.config.productionTip = false
-Vue.component('chart', ECharts)
+// Vue.component('chart', ECharts)
 Object.keys(filters).forEach(opt => Vue.filter(opt, filters[opt]))
 Vue.use(iView)
 Vue.use(axios)

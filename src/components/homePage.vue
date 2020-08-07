@@ -1,7 +1,6 @@
 <template>
   <div>
-    <headers title="考勤数据统计"></headers>
-    <p class="lastMonth"><b>上月考勤情况</b></p>
+    <headers title="本月考勤数据统计"></headers>
     <section class="cardContainer">
       <Card class="cardBox"
             v-for="(opt, index) in cardData"
@@ -16,7 +15,7 @@
           <div class="infoBot">
             <div class="infoBotL">{{ opt.count }}次</div>
             <Poptip placement="right" width="230" class="poptipContainer">
-              <div class="infoBotR" >{{ opt.title }}的小伙伴</div>
+              <div class="infoBotR" >{{ opt.title }}的员工</div>
               <div slot="content" class="color_3 slotContent">
                 <ul>
                   <li v-for="(item, key) in opt.detailList" :key="key" class="detailList">
@@ -34,8 +33,9 @@
       </Card>
     </section>
 
-    <section>
-      <chart ref="chart1" :options="orgOptions" :auto-resize="true" style="width: 100%;" class="chartBox"></chart>
+    <section class="charts_box">
+      <highcharts-component id='container' :options="options" :styles="styles"></highcharts-component>
+      <highcharts-component id='container2' :options="options2" :styles="styles2"></highcharts-component>
     </section>
   </div>
 </template>
@@ -43,328 +43,169 @@
 <script>
 import headers from '@/components/Public/headers.vue'
 import { debounce } from '@/utils/utils'
+import mock from '../utils/data.js'
+import highchartsComponent from '@/components/Public/highcharts.vue'
+import Highcharts from 'highcharts/highstock';
 export default {
   data () {
     return {
-      cardData: [{
-        bgColor: 'rgba(134, 147, 243, 1)',
-        title: '迟到',
-        count: 23,
-        detailList: [{
-          name: '技术部-李明',
-          id: 'js2018100013',
-          sex: 1, // 0男 1女
-          num: 8
-        }, {
-          name: '销售部-张刚',
-          id: 'xs2018100032',
-          sex: 0,
-          num: 7
-        }, {
-          name: '测试部-李美丽',
-          id: 'cs2018100019',
-          sex: 1,
-          num: 4
-        }, {
-          name: '产品部-王建军',
-          id: 'cp2018100003',
-          sex: 0,
-          num: 2
-        }, {
-          name: '设计部-刘小凯',
-          id: 'sj2018100018',
-          sex: 0,
-          num: 1
-        }, {
-          name: '人事部-孙丹丹',
-          id: 'rs2018100045',
-          sex: 1,
-          num: 1
-        }]
-      }, {
-        bgColor: 'rgba(255, 153, 153, 1)',
-        title: '早退',
-        count: 18,
-        detailList: [{
-          name: '技术部-李明',
-          id: 'js2018100013',
-          sex: 1, // 0男 1女
-          num: 5
-        }, {
-          name: '销售部-张刚',
-          id: 'xs2018100032',
-          sex: 0,
-          num: 5
-        }, {
-          name: '测试部-李丽',
-          id: 'cs2018100019',
-          sex: 1,
-          num: 4
-        }, {
-          name: '产品部-王军',
-          id: 'cp2018100003',
-          sex: 0,
-          num: 2
-        }, {
-          name: '设计部-刘凯',
-          id: 'sj2018100018',
-          sex: 0,
-          num: 1
-        }, {
-          name: '人事部-孙丹',
-          id: 'rs2018100045',
-          sex: 1,
-          num: 1
-        }]
-      }, {
-        bgColor: 'rgba(120, 171, 217, 1)',
-        title: '旷工',
-        count: 18,
-        detailList: [{
-          name: '技术部-李明',
-          id: 'js2018100013',
-          sex: 1, // 0男 1女
-          num: 5
-        }, {
-          name: '销售部-张刚',
-          id: 'xs2018100032',
-          sex: 0,
-          num: 5
-        }, {
-          name: '测试部-李丽',
-          id: 'cs2018100019',
-          sex: 1,
-          num: 4
-        }, {
-          name: '产品部-王军',
-          id: 'cp2018100003',
-          sex: 0,
-          num: 2
-        }, {
-          name: '设计部-刘凯',
-          id: 'sj2018100018',
-          sex: 0,
-          num: 1
-        }, {
-          name: '人事部-孙丹',
-          id: 'rs2018100045',
-          sex: 1,
-          num: 1
-        }]
-      }, {
-        bgColor: 'rgba(164, 123, 208, 1)',
-        title: '未写日报',
-        count: 18,
-        detailList: [{
-          name: '技术部-李明',
-          id: 'js2018100013',
-          sex: 1, // 0男 1女
-          num: 5
-        }, {
-          name: '销售部-张刚',
-          id: 'xs2018100032',
-          sex: 0,
-          num: 5
-        }, {
-          name: '测试部-李丽',
-          id: 'cs2018100019',
-          sex: 1,
-          num: 4
-        }, {
-          name: '产品部-王军',
-          id: 'cp2018100003',
-          sex: 0,
-          num: 2
-        }, {
-          name: '设计部-刘凯',
-          id: 'sj2018100018',
-          sex: 0,
-          num: 1
-        }, {
-          name: '人事部-孙丹',
-          id: 'rs2018100045',
-          sex: 1,
-          num: 1
-        }]
-      }, {
-        bgColor: 'rgba(0, 204, 153, 1)',
-        title: '未打卡',
-        count: 18,
-        detailList: [{
-          name: '技术部-李明',
-          id: 'js2018100013',
-          sex: 1, // 0男 1女
-          num: 5
-        }, {
-          name: '销售部-张小刚',
-          id: 'xs2018100032',
-          sex: 0,
-          num: 5
-        }, {
-          name: '测试部-李小丽',
-          id: 'cs2018100019',
-          sex: 1,
-          num: 4
-        }, {
-          name: '产品部-王小军',
-          id: 'cp2018100003',
-          sex: 0,
-          num: 2
-        }, {
-          name: '设计部-刘小凯',
-          id: 'sj2018100018',
-          sex: 0,
-          num: 1
-        }, {
-          name: '人事部-孙小丹',
-          id: 'rs2018100045',
-          sex: 1,
-          num: 1
-        }]
-      }],
+      cardData: mock.cardData,
       manImg: require('@/assets/man.png'),
       womanImg: require('@/assets/woman.png'),
-      orgOptions: {}
+      options: {},
+      options2: {},
+      styles: {
+        margin: '20px 0',
+        width: '45%'
+      },
+      styles2: {
+        margin: '20px 0',
+        width: '50%'
+      },
+      lastMonthSaves: [130.98, 220.5, 90.48, 341.66],
+      nestMonthSaves: [198.88, 140.541, 210.78, 223.879]
     }
   },
-  mounted() {
-    this.initChart()
-
-
-    //   xAxis: {
-    //     type: 'category',
-    //     data: ['01.23', '01.24', '01.25', '01.26', '01.27', '01.28', '01.29'],
-    //     boundaryGap: ['10%', '10%',],//坐标轴两边留白
-    //     axisLine: {//坐标轴
-    //         lineStyle:{
-    //             opacity: 0.01,//设置透明度就可以控制显示不显示
-    //         },
-    //     },
-    //     splitLine: {//网格线
-    //         show: false,//网格线
-    //         lineStyle:{
-    //             color: '#eee',
-    //         },
-    //     },
-    //     axisTick: {//刻度线
-    //         show: false,//去掉刻度线
-    //     }
-    // },
-    // yAxis: {
-    //     min:0,//最小刻度
-    //     max:25,//最大刻度
-    //     type: 'value',
-    //     name:'℃         ',//是基于Y轴线对齐，用空格站位让坐标轴名称与刻度名称对齐
-    //     nameTextStyle: {
-    //         color:'#444e65',
-    //         align:'left',//文字水平对齐方式
-    //         verticalAlign:'middle' //文字垂直对齐方式
-    //     },
-    //     axisTick: { //刻度线
-    //         show: false //去掉刻度线
-    //     },
-    //     axisLine: { //坐标轴线
-    //         lineStyle:{
-    //             opacity: 0 //透明度为0 
-    //         }
-    //     },
-    //     splitLine: {//网格线
-    //         // show: false,//网格线
-    //         lineStyle:{
-    //             color: '#eeeeee'
-    //         }
-    //     }
-    // },
-    // series: [{
-    //       data: [15, 14, 10, 11, 14.58, 10, 11.5,],//数据
-    //       type: 'line',//图表类型，折线图还是柱状图还是饼图
-    //       label: {//图形上的文本标签
-    //           normal:{
-    //               formatter: '{@data}℃',
-    //               show: true,//显示数据
-    //               color: '#00af58',
-    //               position: 'top',
-    //               fontSize:'14',
-    //           },
-    //       },
-    //       itemStyle: {//折线拐点标志的样式。
-    //           normal: {
-    //               color: '#00af58',
-    //           },
-    //       },
-    //       areaStyle: {//区域填充样式
-    //           normal:{
-    //               color: {
-    //                   type:'linear',
-    //                   x: 0,
-    //                   y: 0,
-    //                   x2: 0,
-    //                   y2: 1,
-    //                   colorStops: [
-    //                       {
-    //                           offset: 0,
-    //                           color: 'rgba(0, 175, 88, 0.4)',
-    //                       },
-    //                       {
-    //                           offset: 1,
-    //                           color: 'rgba(0, 175, 88, 0.01)',
-    //                       },
-    //                   ],
-    //                   globaCoord: false,
-    //               }
-    //           }
-    //       }
-    //   }]
-    // }
-  },
-  methods: {
-    initChart() {
-      this.orgOptions = {
-        grid: {
-          left: 40,
-          right: 0
+  mounted () {
+    var that = this
+    this.options = {
+        chart: {
+          type: 'column',
+          styledMode: false
         },
-        xAxis: {
-          type: 'category',
-          data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+        title: {
+          // text: '上月/本月部门盈利情况',
+          text: '.',
+          style: 'highcharts-title'
         },
+        xAxis: [{
+          categories: ['1号~7号', '8号~14号', '15号~21号', '22号~月末'],
+        }],
         yAxis: {
-          name: '(单位：次)',
-          nameTextStyle: {
-            fontWeight: 'bold'
-          },
-          type: 'value'
+            min: 0,
+            title: {
+                text: '(单位：万元)'
+            },
+            stackLabels: { // 堆叠数据标签
+                enabled: true,
+                style: {
+                    fontWeight: 'bold',
+                    color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                }
+            }
+        },
+        plotOptions: {
+          column: {
+            borderRadius: 5
+          }
         },
         series: [{
-          data: ['29', '23', '26', '21', '14', '12', '31', '23', '7', '27', '15', '18'],
-          type: 'line',
-          itemStyle: {
-            normal: {
-              label: {
-                show: true,
-                // formatter: "{c}次",
-                textStyle: {
-                  color: 'darkBlue' // 数值点颜色
-                }
-              }
+            name: '销售一部',
+            data: [130.98, 220.5, 90.48, 341.66]
+        }, {
+            name: '销售二部',
+            data: [198.88, 140.541, 210.78, 223.879]
+        }, {
+            name: '销售三部',
+            data: [130.98, 220.5, 90.48, 341.66]
+        }, {
+            name: '销售四部',
+            data: [198.88, 140.541, 210.78, 223.879]
+        }],
+        legend: {
+            align: 'right',
+            x: 0,
+            verticalAlign: 'top',
+            y: 10,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+            borderColor: '#CCC',
+            borderWidth: 1,
+            shadow: false
+        },
+        tooltip: {
+            formatter: function () {
+                return this.series.name + ': ' + this.y + '<br/>' +
+                    '本次占比: ' + ((this.y / this.point.stackTotal) * 100).toFixed(2)  + '%';
             }
-          },
-          smooth: false // 曲线是否平滑显示
-        }]
-      }
+        },
+        credits: {
+          enabled: true,
+          text: '本月销售部门的营销总和汇集表'
+        },
+        plotOptions: {
+            column: {
+                stacking: 'normal',
+                dataLabels: {
+                    enabled: true,
+                    color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                    style: {
+                        // 如果不需要数据标签阴影，可以将 textOutline 设置为 'none'
+                        textOutline: '1px 0.5px #768232'
+                    },
+                    formatter: function () {
+                        return this.y.toFixed(2);
+                    }
+                }
+            }
+        }
     }
+
+    this.options2 = {
+      chart: {
+        type: 'column',
+        styledMode: false
+      },
+      title: {
+        text: '上月/本月部门盈利情况',
+        style: 'highcharts-title2'
+      },
+      xAxis: [{
+        categories: ['1号~7号', '8号~14号', '15号~21号', '22号~月末'],
+      }],
+      yAxis: [{
+        categories: [],
+        className: 'highcharts-color-0',
+        title: {
+          text: '(单位：万元)'
+        },
+        labels: {
+          format: '{value}'
+        }
+      }, {
+        className: 'highcharts-color-1',
+        opposite: true,
+        title: {
+          text: '（本月的第一个周一开始计算）'
+        }
+      }],
+      series: [{
+        data: that.lastMonthSaves,
+        name: '上月',
+        labels: {
+          format: '{value}万元'
+        }
+      }, {
+        data: that.nestMonthSaves,
+        name: '本月'
+      }]
+    }
+
+    // 图表初始化函数
+    var chart = Highcharts.chart('container', this.options);
+    var chart2 = Highcharts.chart('container2', this.options2);
+    // chart2.series[0].setData(this.lastMonthSaves)
+  },
+  methods: {
   },
   components: {
-    headers
+    headers,
+    highchartsComponent
   }
 }
 </script>
 
 <style>
-  .lastMonth {
-    padding-bottom: 15px;
-  }
-
   .cardContainer {
     display: flex;
     justify-content: space-between;
@@ -418,6 +259,49 @@ export default {
 
   .chartBox > div, .chartBox canvas {
     width: 100% !important;
+  }
+
+  .charts_box {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  /* Link the series colors to axis colors */
+  .highcharts-root {
+    fill: #fff;
+  }
+  .highcharts-title {
+    fill: #47abff;
+    font-size: medium;
+    font-family: "圆体-简", "平方-简", "娃娃体-简";
+    transform: translateY(0px);
+  }
+  .highcharts-title2 {
+    transform: translateY(40px);
+  }
+  .highcharts-color-0 {
+    fill: rgb(120, 171, 217);
+    stroke: #7cb5ec;
+  }
+  .highcharts-axis.highcharts-color-0 .highcharts-axis-line {
+    stroke: #7cb5ec;
+  }
+  .highcharts-axis.highcharts-color-0 text {
+    fill: #7cb5ec;
+  }
+  .highcharts-color-1 {
+    fill: #e4c0ff;
+    stroke: #e4c0ff;
+  }
+  .highcharts-axis.highcharts-color-1 .highcharts-axis-line {
+    stroke: #90ed7d;
+  }
+  .highcharts-axis.highcharts-color-1 text {
+    fill: #90ed7d;
+  }
+  .highcharts-yaxis .highcharts-axis-line {
+    stroke-width: 2px;
   }
 </style>
 
